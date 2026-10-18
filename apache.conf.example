@@ -1,0 +1,41 @@
+<VirtualHost *:80>
+    ServerName status.example.com
+
+    # Redirect all HTTP to HTTPS
+    RewriteEngine On
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerAdmin webmaster@example.com
+    ServerName status.example.com
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/fullchain.pem
+    SSLCertificateKeyFile /etc/ssl/private/privkey.pem
+
+    # Security Headers
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    ProxyPreserveHost On
+
+    # API Proxy
+    ProxyPass /api http://127.0.0.1:8082/api
+    ProxyPassReverse /api http://127.0.0.1:8082/api
+
+    # SSE Streaming Proxy (No Buffering)
+    ProxyPass /sse http://127.0.0.1:8082/sse flushpackets=on
+    ProxyPassReverse /sse http://127.0.0.1:8082/sse
+    <Location /sse>
+        SetEnv no-gzip 1
+    </Location>
+
+    # Frontend Proxy
+    ProxyPass / http://127.0.0.1:5173/
+    ProxyPassReverse / http://127.0.0.1:5173/
+</VirtualHost>
+</IfModule>

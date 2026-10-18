@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Only custom styles not covered by Tailwind */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Modal */
+.modal-backdrop {
+  @apply fixed inset-0 bg-black/50 flex justify-center items-center z-50;
+}
+.modal-content {
+  @apply bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-md shadow-xl;
+}
+
+/* Animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
